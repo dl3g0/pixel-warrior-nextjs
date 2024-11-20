@@ -91,8 +91,12 @@ app.prepare().then(() => {
     return handle(req, res);
   });
 
-  httpServer.listen(3000, () => {
-    console.log('> Ready on http://localhost:3000');
+  // Usa el puerto proporcionado por Render o 3000 por defecto
+  const port = process.env.PORT || 3000;
+
+  // Asegúrate de que el servidor escuche en todas las interfaces (0.0.0.0)
+  httpServer.listen(port, '0.0.0.0', () => {
+    console.log(`> Ready on http://localhost:${port}`);
   });
 
   // Manejo de errores explícito
