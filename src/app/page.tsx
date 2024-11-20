@@ -13,7 +13,7 @@ const IndexPage: React.FC = () => {
   const pixelSize = canvasSize / gridSize; // Tamaño de cada píxel (6x6 px)
 
   useEffect(() => {
-    const socketConnection = io('http://localhost:3000');
+    const socketConnection = io('https://pixel-warrior-nextjs.onrender.com:3000');
     setSocket(socketConnection);
 
     socketConnection.on('connect', () => {
