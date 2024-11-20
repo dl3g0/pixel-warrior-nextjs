@@ -15,16 +15,16 @@ const getErrorMessage = (error: unknown): string => {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
-        const { username } = req.body;
+        const { name } = req.body;
 
         // Validación simple
-        if (!username) {
+        if (!name) {
             return res.status(400).json({ success: false, error: 'El nombre de usuario es requerido.' });
         }
 
         try {
             const user = await prisma.user.create({
-                data: { username },
+                data: { name },
             });
 
             return res.status(201).json({ success: true, user });

@@ -8,24 +8,34 @@ export const config = {
   },
 };
 
+// Extender el tipo de res.socket para incluir 'server' e 'io'
+interface CustomSocket extends NodeJS.Socket {
+  server: {
+    io?: Server; // Propiedad opcional para evitar errores en tiempo de ejecución
+  };
+}
+
 const handler = (req: NextApiRequest, res: NextApiResponse) => {
-  if (!res.socket.server.io) {
-    // Si no existe la propiedad 'io', creamos una instancia de Socket.IO
-    const io = new Server(res.socket.server);
+  // Forzamos el tipo de res.socket para que incluya las propiedades esperadas
+  const socket = (res.socket as unknown) as CustomSocket;
 
-    // Asignamos la instancia de io al servidor de Next.js
-    res.socket.server.io = io;
+  if (!socket.server.io) {
+    // Aquí usamos el servidor HTTP subyacente para inicializar Socket.IO
+    const io = new Server(socket.server as any); // Pasar el servidor HTTP subyacente
 
-    // Configuración de los eventos de socket.io
-    io.on('connection', (socket) => {
+    // Asignamos la instancia de io al servidor
+    socket.server.io = io;
+
+    // Configuración de eventos
+    io.on('connection', (client) => {
       console.log('Un cliente se ha conectado');
 
-      socket.on('pixelChange', (data) => {
+      client.on('pixelChange', (data) => {
         console.log('Cambio de píxel:', data);
-        socket.broadcast.emit('pixelChange', data); // Emitir el cambio a los demás clientes
+        client.broadcast.emit('pixelChange', data); // Emitir el cambio a otros clientes
       });
 
-      socket.on('disconnect', () => {
+      client.on('disconnect', () => {
         console.log('Un cliente se ha desconectado');
       });
     });
