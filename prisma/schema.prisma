@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // O elige tu base de datos preferida (MySQL, SQLite)
+  url      = env("DATABASE_URL") // La URL de tu base de datos
+}
+
+model User {
+  id     Int     @id @default(autoincrement())
+  name   String
+  pixels Pixel[] // Relación con el modelo Pixel
+}
+
+model Pixel {
+  id     Int    @id @default(autoincrement())
+  x      Int
+  y      Int
+  color  String
+  userId Int?   // Relación opcional con el modelo User
+  user   User?  @relation(fields: [userId], references: [id])
+
+  @@unique([x, y]) // Índice único compuesto para x e y
+}
+
